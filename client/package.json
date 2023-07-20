@@ -1,0 +1,23 @@
+{
+  "name": "nereus-ui",
+  "version": "1.0.0",
+  "description": "Web client for nereus-ui.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rdghosal/nereus-ui.git"
+  },
+  "author": "Rahul D. Ghosal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rdghosal/nereus-ui/issues"
+  },
+  "homepage": "https://github.com/rdghosal/nereus-ui#readme",
+  "dependencies": {
+    "@types/ws": "^8.5.5",
+    "ws": "^8.13.0"
+  }
+}
