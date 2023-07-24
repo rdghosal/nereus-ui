@@ -1,6 +1,8 @@
 use actix::{Actor, StreamHandler};
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
+use actix_files::NamedFile;
+use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
 use actix_web_actors::ws;
+use std::{env, path::Path};
 
 /// Define HTTP actor
 struct MyWs;
@@ -26,7 +28,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
-async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
+async fn index() -> Result<NamedFile> {
+    let curr_dir = env::current_dir()?;
+    let path = curr_dir.as_path().join(Path::new("static/index.html"));
+    println!("{path:?}");
+    Ok(NamedFile::open(path)?)
+}
+
+async fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
     let resp = ws::start(MyWs {}, &req, stream);
     println!("{:?}", resp);
     resp
@@ -34,8 +43,13 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().route("/ws/", web::get().to(index)))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(index))
+            .route("/index.html", web::get().to(index))
+            .route("/ws/", web::get().to(ws_index))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
