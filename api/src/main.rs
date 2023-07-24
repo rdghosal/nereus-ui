@@ -2,7 +2,7 @@ use actix::{Actor, StreamHandler};
 use actix_files::NamedFile;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
 use actix_web_actors::ws;
-use std::{env, path::Path};
+use std::{env, panic, path::Path};
 
 /// Define HTTP actor
 struct MyWs;
@@ -19,9 +19,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
         match msg {
             Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
             Ok(ws::Message::Text(text)) => {
-                let cls_diagram = nereus::transform(text.to_string()).unwrap_or(String::new());
-                ctx.text(cls_diagram)
+                let result = panic::catch_unwind(|| nereus::transform(text.to_string()).unwrap());
+                if result.is_ok() {
+                    return ctx.text(result.unwrap_or(String::new()));
+                }
             }
+
             Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             _ => (),
         }
