@@ -24,9 +24,17 @@
     <div id="editor"></div>
     <script defer type="text/javascript">
       let ws = new WebSocket("ws://127.0.0.1:8080/ws/");
+
       let editor = ace.edit("editor");
       editor.setTheme("ace/theme/tomorrow_night_blue");
       editor.session.setMode("ace/mode/javascript");
+      editor.setKeyboardHandler("ace/keyboard/vim");
+      editor.on("change", () => {
+        ws.send(editor.getValue());
+      });
+      ws.addEventListener("message", (event) => {
+        console.log(event.data);
+      });
     </script>
   </body>
 </html>

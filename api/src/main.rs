@@ -19,7 +19,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
         match msg {
             Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
             Ok(ws::Message::Text(text)) => {
-                let cls_diagram = nereus::transform(text.to_string()).unwrap();
+                let cls_diagram = nereus::transform(text.to_string()).unwrap_or(String::new());
                 ctx.text(cls_diagram)
             }
             Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
