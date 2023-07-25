@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>Nereus UI</title>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"
       type="text/javascript"
     ></script>
     <style type="text/css" media="screen">
-      #editor {
-        width: 75vw;
+      #editor,
+      #mermaid {
+        width: 50vw;
         font-size: 2rem;
         position: absolute;
         top: 0;
@@ -16,24 +18,41 @@
         bottom: 0;
         left: 0;
       }
+
+      #cls-diagram {
+        margin-left: 50%;
+        border: 5px solid red;
+        z-index: 100000;
+        height: 100vh;
+      }
+
+      #classDiagram {
+        border: 5px solid red;
+      }
     </style>
   </head>
 
   <body>
     <p>Hello World</p>
     <div id="editor"></div>
-    <script defer type="text/javascript">
-      let ws = new WebSocket("ws://127.0.0.1:8080/ws/");
+    <div id="cls-diagram"></div>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: false });
 
-      let editor = ace.edit("editor");
+      const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
+      const editor = ace.edit("editor");
       editor.setTheme("ace/theme/tomorrow_night_blue");
       editor.session.setMode("ace/mode/javascript");
       editor.setKeyboardHandler("ace/keyboard/vim");
       editor.on("change", () => {
         ws.send(editor.getValue());
       });
-      ws.addEventListener("message", (event) => {
+      ws.addEventListener("message", async (event) => {
         console.log(event.data);
+        const mermaidContainer = document.getElementById("cls-diagram");
+        const { svg } = await mermaid.render("classDiagram", event.data);
+        mermaidContainer.innerHTML = svg;
       });
     </script>
   </body>
