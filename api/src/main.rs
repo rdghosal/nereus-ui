@@ -34,7 +34,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 async fn index() -> Result<NamedFile> {
     let curr_dir = env::current_dir()?;
     let path = curr_dir.as_path().join(Path::new("static/index.html"));
-    println!("{path:?}");
+    // println!("{path:?}");
     Ok(NamedFile::open(path)?)
 }
 
@@ -52,7 +52,7 @@ async fn main() -> std::io::Result<()> {
             .route("/index.html", web::get().to(index))
             .route("/ws/", web::get().to(ws_index))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
