@@ -2,8 +2,9 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
     <title>Nereus UI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js" type="text/javascript"></script>
     <style type="text/css" media="screen">
         * {
@@ -15,19 +16,45 @@
         html,
         body {
             width: 100%;
-            height: 100vh;
+        }
+
+        nav {
+            width: 100%;
+            height: 60px;
+            padding: 0.5rem 1rem;
+            text-align: center;
+        }
+
+        nav,
+        .contents {
+            display: flex;
+            background-color: rgba(108, 124, 169, 1);
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .logo {
+            background: url('static/logo.svg');
+            width: 100px;
+            height: calc(60px - 1rem);
+            border: 2px solid red;
         }
 
         .page {
-            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .contents {
             position: relative;
-            flex-direction: row;
+            justify-content: space-evenly;
             height: 100%;
+            width: 100vw;
+            padding: 1rem 0rem;
         }
 
         #editor,
-        #mermaid {
-            width: 50vw;
+        #cls-diagram {
+            width: 45%;
             font-size: 2rem;
             top: 0;
             right: 0;
@@ -35,21 +62,27 @@
             left: 0;
         }
 
-        #cls-diagram {
-            border: 5px solid red;
-            max-width: 50vw;
+        #editor {
+            border-radius: 1rem;
         }
 
-        #classDiagram {
-            border: 5px solid red;
+        #cls-diagram {
+            background-repeat: no-repeat;
+            background-position: top;
+            padding: 2rem;
         }
     </style>
 </head>
 
 <body>
     <div class="page">
-        <div id="editor"></div>
-        <img id="cls-diagram"></img>
+        <nav>
+            <div class="logo"></div>
+        </nav>
+        <div class="contents">
+            <div id="editor"></div>
+            <img id="cls-diagram" src=""></img>
+        </div>
     </div>
 
     <script type="module">
@@ -58,19 +91,24 @@
 
         const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
         const editor = ace.edit("editor");
+        editor.renderer.setPadding(20);
+        const mermaidContainer = document.getElementById("cls-diagram");
+
         editor.setTheme("ace/theme/tomorrow_night_blue");
-        editor.session.setMode("ace/mode/javascript");
+        editor.session.setMode("ace/mode/python");
         editor.setKeyboardHandler("ace/keyboard/vim");
         editor.on("change", () => {
             ws.send(editor.getValue());
         });
+
         ws.addEventListener("message", async (event) => {
             console.log(event.data);
-            const mermaidContainer = document.getElementById("cls-diagram");
             const {svg} = await mermaid.render("classDiagram", event.data);
             console.log(svg);
-            const blob = new Blob([svg], {type: 'image/svg+xml'});
+            const blob = new Blob([svg], {type: "image/svg+xml"});
             const src = URL.createObjectURL(blob);
+            console.log(src);
+            //mermaidContainer.style.backgroundImage = `url('${src}')`;
             mermaidContainer.src = src;
         });
     </script>
