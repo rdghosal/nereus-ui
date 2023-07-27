@@ -1,6 +1,6 @@
 use actix::{Actor, StreamHandler};
 use actix_files::NamedFile;
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
+use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
 use actix_web_actors::ws;
 use std::{env, panic, path::Path};
 
@@ -31,6 +31,16 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
+#[get("/static/{filename}")]
+async fn get_image(info: web::Path<String>) -> Result<NamedFile> {
+    let curr_dir = env::current_dir()?;
+    let path = curr_dir
+        .as_path()
+        .join(Path::new(&format!("static/{}", info)));
+    // println!("{path:?}");
+    Ok(NamedFile::open(path)?)
+}
+
 async fn index() -> Result<NamedFile> {
     let curr_dir = env::current_dir()?;
     let path = curr_dir.as_path().join(Path::new("static/index.html"));
@@ -48,6 +58,7 @@ async fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
+            .service(get_image)
             .route("/", web::get().to(index))
             .route("/index.html", web::get().to(index))
             .route("/ws/", web::get().to(ws_index))

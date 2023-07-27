@@ -18,30 +18,35 @@
             width: 100%;
         }
 
+        .page {
+            height: calc(100vh - 40px);
+        }
+
         nav {
+            position: relative;
             width: 100%;
-            height: 60px;
+            height: 40px;
             padding: 0.5rem 1rem;
             text-align: center;
+            z-index: 10;
+            box-shadow: 0px 5px 20px 0px rgba(108, 124, 169, 1);
         }
 
         nav,
         .contents {
             display: flex;
-            background-color: rgba(108, 124, 169, 1);
+            background-color: rgba(108, 124, 169, .90);
             flex-direction: row;
             justify-content: center;
         }
 
         .logo {
-            background: url('static/logo.svg');
+            background-image: url(static/logo.svg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
             width: 100px;
-            height: calc(60px - 1rem);
-            border: 2px solid red;
-        }
-
-        .page {
-            height: calc(100vh - 60px);
+            height: calc(40px - 1rem);
         }
 
         .contents {
@@ -49,13 +54,13 @@
             justify-content: space-evenly;
             height: 100%;
             width: 100vw;
-            padding: 1rem 0rem;
+            padding: 2rem 0rem 1rem 0rem;
         }
 
         #editor,
         #cls-diagram {
             width: 45%;
-            font-size: 2rem;
+            font-size: 1.5rem;
             top: 0;
             right: 0;
             bottom: 0;
@@ -66,10 +71,13 @@
             border-radius: 1rem;
         }
 
+        .ace_content,
+        .ace_gutter {
+            padding-top: 0.5rem;
+        }
+
         #cls-diagram {
-            background-repeat: no-repeat;
-            background-position: top;
-            padding: 2rem;
+            padding: 0 2rem;
         }
     </style>
 </head>
@@ -91,7 +99,7 @@
 
         const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
         const editor = ace.edit("editor");
-        editor.renderer.setPadding(20);
+        editor.renderer.setPadding(14);
         const mermaidContainer = document.getElementById("cls-diagram");
 
         editor.setTheme("ace/theme/tomorrow_night_blue");
