@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js" type="text/javascript"></script>
     <style type="text/css" media="screen">
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto+Serif:opsz,wght@8..144,100&family=Roboto:wght@100&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +21,9 @@
         }
 
         .page {
-            height: calc(100vh - 40px);
+            /*height: calc(100vh - 40px + 4.10rem);*/
+            height: 100vh;
+            background-color: rgba(108, 124, 169, .90);
         }
 
         nav {
@@ -35,7 +39,6 @@
         nav,
         .contents {
             display: flex;
-            background-color: rgba(108, 124, 169, .90);
             flex-direction: row;
             justify-content: center;
         }
@@ -49,17 +52,27 @@
             height: calc(40px - 1rem);
         }
 
+        .help {
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(20, 45, 96, 1);
+            font-weight: 700;
+            font-size: 1.10rem;
+            letter-spacing: 0.02rem;
+            padding: 1rem 0 2rem 0;
+        }
+
         .contents {
             position: relative;
             justify-content: space-evenly;
-            height: 100%;
+            height: calc(100% - 40px - 5rem);
             width: 100vw;
-            padding: 2rem 0rem 1rem 0rem;
+            padding: 0rem 0rem 1rem 0rem;
         }
 
         #editor,
         #cls-diagram {
-            width: 45%;
+            width: 40%;
             font-size: 1.5rem;
             top: 0;
             right: 0;
@@ -76,8 +89,13 @@
             padding-top: 0.5rem;
         }
 
-        #cls-diagram {
-            padding: 0 2rem;
+        @media screen and (max-width: 1250px) {
+
+            #editor,
+            #cls-diagram {
+                width: 45%;
+                font-size: 1.25rem;
+            }
         }
     </style>
 </head>
@@ -87,6 +105,7 @@
         <nav>
             <div class="logo"></div>
         </nav>
+        <p class="help">enter valid pydantic models and watch their UML appear!</p>
         <div class="contents">
             <div id="editor"></div>
             <img id="cls-diagram" src=""></img>
