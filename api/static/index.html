@@ -40,16 +40,18 @@
             align-items: center;
         }
 
-        .overlay {
+        #overlay {
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             background-color: rgba(51, 51, 51, 0.40);
             z-index: 100;
+            display: none;
         }
 
         .modal {
+            display: none;
             background-color: rgba(115, 126, 166, 1);
             opacity: 1;
             color: rgba(20, 45, 96, 1);
@@ -72,6 +74,14 @@
             background: url('static/close-btn.svg');
             width: 20px;
             height: 20px;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .info-btn {
+            background: url('static/info-btn.svg');
+            width: 30px;
+            height: 30px;
             background-size: cover;
             background-repeat: no-repeat;
         }
@@ -105,6 +115,17 @@
             justify-content: center;
         }
 
+        .main {
+            display: flex;
+            flex-direction: row;
+            height: calc(100% - 40px);
+            align-items: start;
+            padding: 3rem 0;
+            justify-content: space-evenly;
+            position: relative;
+            width: 100%;
+        }
+
         .logo {
             background-image: url(static/logo.svg);
             background-repeat: no-repeat;
@@ -127,10 +148,21 @@
         .contents {
             position: relative;
             justify-content: space-evenly;
-            height: calc(100% - 40px - 5rem);
+            height: 100%;
             width: 100vw;
             max-width: 1600px;
-            padding: 0rem 0rem 1rem 0rem;
+            padding: 0rem 0rem 0.5rem 0rem;
+        }
+
+        #ctrl-panel {
+            position: absolute;
+            top: 10rem;
+            left: 0;
+            height: 20rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
         }
 
         #editor,
@@ -168,10 +200,17 @@
         function closeModal(e) {
             const parentId = e.target.dataset.modal;
             document.getElementById(parentId).style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        function openModal(e) {
+            const parentId = e.target.dataset.modal;
+            document.getElementById(parentId).style.display = "block";
+            document.getElementById("overlay").style.display = "block";
         }
     </script>
     <div class="page">
-        <div class="overlay"></div>
+        <div id="overlay"></div>
         <div class="modal" id="help">
             <div class="flex-row">
                 <p class="modal__title">Help</p>
@@ -183,10 +222,14 @@
         <nav>
             <div class="logo"></div>
         </nav>
-        <p class="help">enter valid pydantic models and watch their UML appear!</p>
-        <div class="contents">
-            <div id="editor"></div>
-            <img id="cls-diagram" src=""></img>
+        <div class="main">
+            <div id="ctrl-panel">
+                <div class="info-btn" data-modal="help" onclick="openModal(event);"></div>
+            </div>
+            <div class="contents">
+                <div id="editor"></div>
+                <img id="cls-diagram" src=""></img>
+            </div>
         </div>
     </div>
 
