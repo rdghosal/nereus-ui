@@ -26,7 +26,7 @@
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .page {
@@ -116,8 +116,18 @@
             mask-image: url('static/download-btn.svg');
             webkit-mask-repeat: no-repeat;
             webkit-mask-size: cover;
-            background-size: cover;
-            background-repeat: no-repeat;
+        }
+
+        .upload-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(20, 45, 96, 1);
+            -webkit-mask-image: url('static/upload-btn.svg');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-image: url('static/upload-btn.svg');
+            webkit-mask-repeat: no-repeat;
+            webkit-mask-size: cover;
         }
 
         .modal__title {
@@ -130,6 +140,7 @@
             font-family: "Roboto", sans-serif;
             font-weight: 800;
             font-size: 1.10rem;
+            line-height: 1.5rem;
         }
 
         nav {
@@ -177,6 +188,27 @@
             font-size: 1.10rem;
             letter-spacing: 0.02rem;
             padding: 1rem 0 2rem 0;
+        }
+
+        .drop-zone {
+            border: 3px dashed rgba(20, 45, 96, 0.5);
+            height: 175px;
+            width: 400px;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .drop-zone p {
+            margin-bottom: 1.50rem;
+        }
+
+        .modal__btn {
+            padding: 0.5rem 2rem;
+            font-family: "Roboto", sans-serif;
+            font-weight: 900;
+            border-radius: 5px;
+            border: none;
         }
 
         .contents {
@@ -231,14 +263,6 @@
             document.getElementById(parentId).style.display = "block";
             document.getElementById("overlay").style.display = "block";
         }
-
-        async function downloadSvg(e) {
-            const uri = document.getElementById('cls-diagram').src;
-            browser.downloads.download({
-                filename: uri,
-                saveAs: true
-            });
-        }
     </script>
     <div class="page">
         <div id="overlay"></div>
@@ -249,14 +273,23 @@
             </div>
             <p class="modal__text">enter valid pydantic models and watch their UML appear!</p>
         </div>
-
-        <!-- <div class="modal--updown-opts">Hello!</div> -->
+        <div class="modal" id="upload">
+            <div class="flex-row">
+                <p class="modal__title">Code Upload</p>
+                <div class="close-btn" data-modal="upload" onclick="closeModal(event);"></div>
+            </div>
+            <div class="drop-zone">
+                <p class="modal__text">drag a folder or file to upload its contents to the editor</p>
+                <button class="modal__btn">Browse...</button>
+            </div>
+        </div>
         <nav>
             <div class="logo"></div>
         </nav>
         <div class="main">
             <div id="ctrl-panel">
                 <div class="info-btn" data-modal="help" onclick="openModal(event);"></div>
+                <div class="upload-btn" data-modal="upload" onclick="openModal(event);"></div>
                 <a href="" id="download-link">
                     <div id="download-btn"></div>
                 </a>
@@ -278,6 +311,8 @@
         editor.renderer.setPadding(14);
         const mermaidContainer = document.getElementById("cls-diagram");
         const downloadLink = document.getElementById("download-link");
+        const overlay = document.getElementById("overlay");
+        const modals = Array.from(document.getElementsByClassName('modal'));
 
         editor.setTheme("ace/theme/tomorrow_night_blue");
         editor.session.setMode("ace/mode/python");
@@ -297,6 +332,11 @@
             mermaidContainer.src = src;
             downloadLink.href = src;
             downloadLink.download = new Date().toString() + '.svg';
+        });
+
+        overlay.addEventListener('click', () => {
+            modals.forEach(m => m.style.display = 'none');
+            overlay.style.display = "none";
         });
     </script>
 </body>
