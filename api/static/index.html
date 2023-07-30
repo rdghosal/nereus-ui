@@ -78,10 +78,44 @@
             background-repeat: no-repeat;
         }
 
+        #ctrl-panel {
+            position: absolute;
+            top: 3rem;
+            left: 0;
+            height: 20rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 30px;
+            justify-content: start;
+            gap: 33%;
+        }
+
         .info-btn {
-            background: url('static/info-btn.svg');
             width: 30px;
             height: 30px;
+            background-color: rgba(20, 45, 96, 1);
+            -webkit-mask-image: url('static/info-btn.svg');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-image: url('static/info-btn.svg');
+            webkit-mask-repeat: no-repeat;
+            webkit-mask-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        #download-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(20, 45, 96, 1);
+            -webkit-mask-image: url('static/download-btn.svg');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-image: url('static/download-btn.svg');
+            webkit-mask-repeat: no-repeat;
+            webkit-mask-size: cover;
             background-size: cover;
             background-repeat: no-repeat;
         }
@@ -149,20 +183,9 @@
             position: relative;
             justify-content: space-evenly;
             height: 100%;
-            width: 100vw;
+            width: calc(100vw - 100px);
             max-width: 1600px;
             padding: 0rem 0rem 0.5rem 0rem;
-        }
-
-        #ctrl-panel {
-            position: absolute;
-            top: 10rem;
-            left: 0;
-            height: 20rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 20px;
         }
 
         #editor,
@@ -208,6 +231,14 @@
             document.getElementById(parentId).style.display = "block";
             document.getElementById("overlay").style.display = "block";
         }
+
+        async function downloadSvg(e) {
+            const uri = document.getElementById('cls-diagram').src;
+            browser.downloads.download({
+                filename: uri,
+                saveAs: true
+            });
+        }
     </script>
     <div class="page">
         <div id="overlay"></div>
@@ -218,6 +249,7 @@
             </div>
             <p class="modal__text">enter valid pydantic models and watch their UML appear!</p>
         </div>
+
         <!-- <div class="modal--updown-opts">Hello!</div> -->
         <nav>
             <div class="logo"></div>
@@ -225,6 +257,9 @@
         <div class="main">
             <div id="ctrl-panel">
                 <div class="info-btn" data-modal="help" onclick="openModal(event);"></div>
+                <a href="" id="download-link">
+                    <div id="download-btn"></div>
+                </a>
             </div>
             <div class="contents">
                 <div id="editor"></div>
@@ -242,6 +277,7 @@
         const editor = ace.edit("editor");
         editor.renderer.setPadding(14);
         const mermaidContainer = document.getElementById("cls-diagram");
+        const downloadLink = document.getElementById("download-link");
 
         editor.setTheme("ace/theme/tomorrow_night_blue");
         editor.session.setMode("ace/mode/python");
@@ -259,6 +295,8 @@
             console.log(src);
             //mermaidContainer.style.backgroundImage = `url('${src}')`;
             mermaidContainer.src = src;
+            downloadLink.href = src;
+            downloadLink.download = new Date().toString() + '.svg';
         });
     </script>
 </body>
