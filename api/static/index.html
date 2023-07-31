@@ -279,8 +279,8 @@
                 <div class="close-btn" data-modal="upload" onclick="closeModal(event);"></div>
             </div>
             <div class="drop-zone">
-                <p class="modal__text">drag a folder or file to upload its contents to the editor</p>
-                <button class="modal__btn">Browse...</button>
+                <p class="modal__text">drag a folder to upload its contents to the editor</p>
+                <input type="file" webkitdirectory mozdirectory />
             </div>
         </div>
         <nav>
@@ -337,6 +337,23 @@
         overlay.addEventListener('click', () => {
             modals.forEach(m => m.style.display = 'none');
             overlay.style.display = "none";
+        });
+
+        const fileInput = document.querySelector('input[type=file]');
+        function loadContentsToEditor(file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', (e) => {
+                const curr = editor.getValue();
+                editor.setValue(curr + '\n' + reader.result);
+            });
+            reader.readAsText(file);
+        }
+        fileInput.addEventListener('change', (e) => {
+            editor.setValue('');
+            Array.from(event.target.files).forEach(f => {
+                console.log(`reading ${f}`);
+                loadContentsToEditor(f);
+            });
         });
     </script>
 </body>
