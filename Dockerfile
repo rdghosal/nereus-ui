@@ -4,9 +4,7 @@ RUN mkdir -p /build
 ENV CARGO_TARGET_DIR=/build
 
 WORKDIR /app
-# COPY ./api .
+COPY ./api .
 
-RUN cargo install cargo-watch 
-
-# EXPOSE 8080
-ENTRYPOINT cargo watch -- cargo run
+RUN cargo build --release
+ENTRYPOINT ["/build/release/nereus-ui"]

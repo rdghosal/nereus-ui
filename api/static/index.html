@@ -340,20 +340,19 @@
         });
 
         const fileInput = document.querySelector('input[type=file]');
-        function loadContentsToEditor(file) {
-            const reader = new FileReader();
-            reader.addEventListener('load', (e) => {
-                const curr = editor.getValue();
-                editor.setValue(curr + '\n' + reader.result);
-            });
-            reader.readAsText(file);
-        }
-        fileInput.addEventListener('change', (e) => {
-            editor.setValue('');
-            Array.from(event.target.files).forEach(f => {
-                console.log(`reading ${f}`);
-                loadContentsToEditor(f);
-            });
+        fileInput.addEventListener('change', (event) => {
+            for (let file of event.target.files) {
+                if (file.name.endsWith('.py')) {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', (e) => {
+                        const curr = sessionStorage.getItem('fileContents');
+                        sessionStorage.setItem('fileContents', curr + ((curr) ? '\n' : '') + reader.result);
+                    });
+                    reader.readAsText(file);
+                }
+            }
+            editor.setValue(sessionStorage.getItem('fileContents'));
+            sessionStorage.removeItem('fileContents');
         });
     </script>
 </body>
