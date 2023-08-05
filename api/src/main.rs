@@ -11,7 +11,7 @@ use std::{collections::HashMap, env, panic, path::Path};
 
 /// Define HTTP actor
 struct MyWs {
-    memcache: HashMap<Addr<Self>, Vec<Bytes>>,
+    memcache: HashMap<Addr<Self>, Vec<u8>>,
 }
 
 impl Default for MyWs {
@@ -37,21 +37,21 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
         match msg {
             Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
             Ok(ws::Message::Text(text)) => {
-                println!("received message of length {}", text.len());
                 ctx.text(make_class_diagram(text.to_string()));
             }
             Ok(ws::Message::Continuation(item)) => match item {
                 Item::FirstText(bytes) => {
-                    self.memcache.insert(ctx.address(), vec![bytes]);
+                    self.memcache.insert(ctx.address(), bytes[..].to_vec());
                 }
                 Item::Continue(bytes) => {
-                    self.memcache.get_mut(&ctx.address()).unwrap().push(bytes);
+                    self.memcache
+                        .get_mut(&ctx.address())
+                        .unwrap()
+                        .extend(&bytes[..]);
                 }
                 Item::Last(bytes) => {
                     let cached = self.memcache.get_mut(&ctx.address()).unwrap();
-                    cached.push(bytes);
-                    let text = cached.concat();
-                    dbg!("{}", String::from_utf8(text.clone()));
+                    let text = [&cached[..], &bytes[..]].concat();
                     cached.clear();
                     ctx.text(make_class_diagram(String::from_utf8(text).unwrap()));
                 }
