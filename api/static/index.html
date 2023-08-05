@@ -342,19 +342,19 @@
         });
 
         const fileInput = document.querySelector('input[type=file]');
-        fileInput.addEventListener('change', (event) => {
+        fileInput.addEventListener('change', async (event) => {
             for (let file of event.target.files) {
                 if (file.name.endsWith('.py')) {
                     const reader = new FileReader();
                     reader.addEventListener('load', (e) => {
-                        const curr = sessionStorage.getItem('fileContents');
+                        const curr = sessionStorage.getItem('fileContents') || '';
                         sessionStorage.setItem('fileContents', curr + ((curr) ? '\n' : '') + reader.result);
                     });
                     reader.readAsText(file);
                 }
             }
             editor.setValue(sessionStorage.getItem('fileContents'));
-            sessionStorage.removeItem('fileContents');
+            sessionStorage.clear();
         });
     </script>
 </body>
