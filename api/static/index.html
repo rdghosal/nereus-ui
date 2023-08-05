@@ -355,6 +355,8 @@
             }
             editor.setValue(sessionStorage.getItem('fileContents'));
             sessionStorage.clear();
+            fileInput.value = '';
+            overlay.click();
         });
     </script>
 </body>
