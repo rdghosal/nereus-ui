@@ -318,20 +318,22 @@
         editor.session.setMode("ace/mode/python");
         editor.setKeyboardHandler("ace/keyboard/vim");
         editor.on("change", () => {
-            ws.send(editor.getValue());
+            console.log(new Blob([editor.getValue()]).size);
+            if (ws.bufferedAmount === 0) {
+                ws.send(editor.getValue());
+            }
         });
 
         ws.addEventListener("message", async (event) => {
-            console.log(event.data);
-            const {svg} = await mermaid.render("classDiagram", event.data);
-            console.log(svg);
-            const blob = new Blob([svg], {type: "image/svg+xml"});
-            const src = URL.createObjectURL(blob);
-            console.log(src);
-            //mermaidContainer.style.backgroundImage = `url('${src}')`;
-            mermaidContainer.src = src;
-            downloadLink.href = src;
-            downloadLink.download = new Date().toString() + '.svg';
+            if (event.data) {
+                console.log(event.data);
+                const {svg} = await mermaid.render("classDiagram", event.data);
+                const blob = new Blob([svg], {type: "image/svg+xml"});
+                const src = URL.createObjectURL(blob);
+                mermaidContainer.src = src;
+                downloadLink.href = src;
+                downloadLink.download = new Date().toString() + '.svg';
+            }
         });
 
         overlay.addEventListener('click', () => {
