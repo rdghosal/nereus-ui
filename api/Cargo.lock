@@ -791,9 +791,9 @@ dependencies = [
 
 [[package]]
 name = "nereus"
-version = "0.1.6"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9c0c04a1c60ffbd15b596773e1309dba68be68fea2b789db0a367f0d91d307f"
+checksum = "73a610926d544dbd31e5fb204975ed4fcff3f84d835aea5da9c6e0dc273c7cbe"
 
 [[package]]
 name = "nereus-ui"

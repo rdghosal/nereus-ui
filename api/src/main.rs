@@ -1,11 +1,7 @@
 use actix::{Actor, Addr, AsyncContext, StreamHandler};
 use actix_files::NamedFile;
 use actix_http::ws::Item;
-use actix_web::{
-    get,
-    web::{self, Bytes},
-    App, Error, HttpRequest, HttpResponse, HttpServer, Result,
-};
+use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
 use actix_web_actors::ws;
 use std::{collections::HashMap, env, panic, path::Path};
 
