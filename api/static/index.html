@@ -415,7 +415,6 @@
         fileInput.addEventListener('change', async (event) => {
             for (let file of event.target.files) {
                 if (file.name.endsWith('.py')) {
-                    console.log('loading ', file.name);
                     const reader = new FileReader();
                     reader.addEventListener('load', (e) => {
                         const curr = sessionStorage.getItem('fileContents') || '';
