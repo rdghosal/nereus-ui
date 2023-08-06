@@ -71,11 +71,15 @@
         }
 
         .close-btn {
-            background: url('static/close-btn.svg');
+            background-color: rgba(20, 45, 96, 1);
+            -webkit-mask-image: url('static/close-btn.svg');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-image: url('static/close-btn.svg');
+            webkit-mask-repeat: no-repeat;
+            webkit-mask-size: cover;
             width: 20px;
             height: 20px;
-            background-size: cover;
-            background-repeat: no-repeat;
         }
 
         #ctrl-panel {
@@ -83,18 +87,12 @@
             left: 0;
             height: 60%;
             border-right: 1px solid rgba(108, 124, 169, .85);
-            z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 25px;
             padding-bottom: 100px;
             justify-content: space-between;
-        }
-
-        #ctrl-panel>*:hover,
-        #ctrl-panel>*:focus {
-            cursor: pointer;
         }
 
         .info-btn {
@@ -111,7 +109,7 @@
             background-repeat: no-repeat;
         }
 
-        #download-btn {
+        .download-btn {
             width: 40px;
             height: 40px;
             background-color: rgba(20, 45, 96, 1);
@@ -135,7 +133,7 @@
             webkit-mask-size: cover;
         }
 
-        #copy-btn {
+        .copy-btn {
             width: 40px;
             height: 40px;
             background-color: rgba(20, 45, 96, 1);
@@ -145,6 +143,16 @@
             mask-image: url('static/copy-btn.svg');
             webkit-mask-repeat: no-repeat;
             webkit-mask-size: cover;
+        }
+
+        .button:hover,
+        .close-btn:hover {
+            cursor: pointer;
+            background-color: rgba(20, 45, 96, .50);
+        }
+
+        .button:hover {
+            transform: scale(1.2);
         }
 
         .modal__title {
@@ -325,12 +333,13 @@
         </nav>
         <div class="main">
             <div id="ctrl-panel">
-                <div class="info-btn" data-modal="help" onclick="openModal(event);"></div>
-                <div class="upload-btn" data-modal="upload" onclick="openModal(event);"></div>
+                <div class="button info-btn" title="Help" data-modal="help" onclick="openModal(event);"></div>
+                <div class="button upload-btn" title="Upload files" data-modal="upload" onclick="openModal(event);">
+                </div>
                 <a href="" id="download-link">
-                    <div id="download-btn"></div>
+                    <div id="download-btn" title="Download image" class="download-btn button"></div>
                 </a>
-                <div id="copy-btn"></div>
+                <div class="button copy-btn" title="Copy mermaid code" id="copy-btn"></div>
             </div>
             <div class="contents">
                 <div class="container">
