@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js" type="text/javascript"></script>
     <style type="text/css" media="screen">
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto+Serif:opsz,wght@8..144,100&family=Roboto:wght@100&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto+Serif:opsz,wght@8..144,100&family=Roboto:wght@100&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto:wght@300;400;700;900&display=swap');
 
         * {
             margin: 0;
@@ -61,13 +60,26 @@
                 1px 0 2px 2px rgba(51, 51, 51, 0.10),
                 -1px 0 2px 2px rgba(51, 51, 51, 0.10);
             position: absolute;
-            height: 300px;
-            width: 500px;
+            height: 350px;
+            width: 600px;
             z-index: 100;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2.5rem;
             top: calc(25%);
             border-radius: 1rem;
+        }
+
+        input[type=file]::file-selector-button {
+            color: #142D60;
+            background-color: #00C6C1;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-family: "Roboto", sans-serif;
+            border-radius: .50rem;
+        }
+
+        input[type=file]::file-selector-button:hover {
+            cursor: pointer;
         }
 
         .close-btn {
@@ -157,13 +169,13 @@
 
         .modal__title {
             font-family: "Roboto Serif", serif;
-            font-weight: 900;
-            font-size: 1.5rem;
+            font-weight: 400;
+            font-size: 1.75rem;
         }
 
         .modal__text {
             font-family: "Roboto", sans-serif;
-            font-weight: 800;
+            font-weight: 300;
             font-size: 1.10rem;
             line-height: 1.5rem;
         }
@@ -216,12 +228,14 @@
         }
 
         .drop-zone {
-            border: 3px dashed rgba(20, 45, 96, 0.5);
-            height: 175px;
-            width: 400px;
+            border: 2px dashed rgba(20, 45, 96, 0.5);
+            background-color: 2px dashed rgba(20, 45, 96, 0.5);
+            background-color: rgba(51, 51, 51, 0.05);
+            width: 90%;
+            height: 75%;
             border-radius: 1rem;
             padding: 1.5rem;
-            text-align: center;
+            text-align: left;
         }
 
         .drop-zone p {
@@ -324,8 +338,8 @@
                 <div class="close-btn" data-modal="upload" onclick="closeModal(event);"></div>
             </div>
             <div class="drop-zone">
-                <p class="modal__text">drag a folder to upload its contents to the editor</p>
-                <input type="file" webkitdirectory mozdirectory />
+                <p class="modal__text">Upload or drag a folder here to upload its contents to the editor.</p>
+                <input type="file" webkitdirectory mozdirectory>
             </div>
         </div>
         <nav>
@@ -401,6 +415,7 @@
         fileInput.addEventListener('change', async (event) => {
             for (let file of event.target.files) {
                 if (file.name.endsWith('.py')) {
+                    console.log('loading ', file.name);
                     const reader = new FileReader();
                     reader.addEventListener('load', (e) => {
                         const curr = sessionStorage.getItem('fileContents') || '';
