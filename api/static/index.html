@@ -82,14 +82,14 @@
             position: absolute;
             top: 3rem;
             left: 0;
-            height: 20rem;
+            height: 40rem;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 0 30px;
             justify-content: start;
-            gap: 33%;
+            gap: 25%;
         }
 
         .info-btn {
@@ -126,6 +126,18 @@
             -webkit-mask-repeat: no-repeat;
             -webkit-mask-size: cover;
             mask-image: url('static/upload-btn.svg');
+            webkit-mask-repeat: no-repeat;
+            webkit-mask-size: cover;
+        }
+
+        #copy-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(20, 45, 96, 1);
+            -webkit-mask-image: url('static/copy-btn.svg');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: cover;
+            mask-image: url('static/copy-btn.svg');
             webkit-mask-repeat: no-repeat;
             webkit-mask-size: cover;
         }
@@ -293,6 +305,7 @@
                 <a href="" id="download-link">
                     <div id="download-btn"></div>
                 </a>
+                <div id="copy-btn"></div>
             </div>
             <div class="contents">
                 <div id="editor"></div>
@@ -314,12 +327,17 @@
         const overlay = document.getElementById("overlay");
         const modals = Array.from(document.getElementsByClassName('modal'));
 
+        const copyButton = document.getElementById("copy-btn");
+        copyButton.addEventListener("click", () => {
+            navigator.clipboard.writeText(sessionStorage.getItem('mermaid'));
+        });
         editor.setTheme("ace/theme/tomorrow_night_blue");
         editor.session.setMode("ace/mode/python");
         editor.setKeyboardHandler("ace/keyboard/vim");
         editor.on("change", () => {
             console.log(new Blob([editor.getValue()]).size);
             if (ws.bufferedAmount === 0) {
+                sessionStorage.removeItem("mermaid");
                 ws.send(editor.getValue());
             }
         });
@@ -327,6 +345,7 @@
         ws.addEventListener("message", async (event) => {
             if (event.data) {
                 console.log(event.data);
+                sessionStorage.setItem('mermaid', event.data);
                 const {svg} = await mermaid.render("classDiagram", event.data);
                 const blob = new Blob([svg], {type: "image/svg+xml"});
                 const src = URL.createObjectURL(blob);
@@ -354,7 +373,7 @@
                 }
             }
             editor.setValue(sessionStorage.getItem('fileContents'));
-            sessionStorage.clear();
+            sessionStorage.removeItem('fileContents');
             fileInput.value = '';
             overlay.click();
         });
