@@ -291,6 +291,22 @@
             display: none;
         }
 
+        #cls-diagram {
+            cursor: zoom-in;
+        }
+
+        #full-screen {
+            z-index: 1000;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0;
+            background-color: rgba(115, 126, 166, .85);
+            backdrop-filter: blur(8px);
+            left: 0;
+            display: none;
+        }
+
         @media screen and (max-width: 1250px) {
 
             #editor,
@@ -324,6 +340,7 @@
         }
     </script>
     <div class="page">
+        <img id="full-screen" src="" />
         <div id="overlay"></div>
         <div class="modal" id="help">
             <div class="flex-row">
@@ -373,6 +390,7 @@
         const editor = ace.edit("editor");
         editor.renderer.setPadding(14);
         const mermaidContainer = document.getElementById("cls-diagram");
+        const fullMermaid = document.getElementById("full-screen");
         const downloadLink = document.getElementById("download-link");
         const overlay = document.getElementById("overlay");
         const modals = Array.from(document.getElementsByClassName('modal'));
@@ -385,12 +403,13 @@
         editor.session.setMode("ace/mode/python");
         editor.setKeyboardHandler("ace/keyboard/vim");
         editor.on("change", () => {
-            console.log(new Blob([editor.getValue()]).size);
+            sessionStorage.removeItem('fileContents');
             if (ws.bufferedAmount === 0) {
                 sessionStorage.removeItem("mermaid");
                 ws.send(editor.getValue());
             }
         });
+
 
         ws.addEventListener("message", async (event) => {
             if (event.data) {
@@ -400,6 +419,7 @@
                 const blob = new Blob([svg], {type: "image/svg+xml"});
                 const src = URL.createObjectURL(blob);
                 mermaidContainer.src = src;
+                fullMermaid.src = src;
                 mermaidContainer.style.display = 'block';
                 downloadLink.href = src;
                 downloadLink.download = new Date().toString() + '.svg';
@@ -409,6 +429,14 @@
         overlay.addEventListener('click', () => {
             modals.forEach(m => m.style.display = 'none');
             overlay.style.display = "none";
+        });
+
+        mermaidContainer.addEventListener('click', () => {
+            fullMermaid.style.display = "block";
+        });
+
+        fullMermaid.addEventListener('click', () => {
+            fullMermaid.style.display = "none";
         });
 
         const fileInput = document.querySelector('input[type=file]');
@@ -424,7 +452,6 @@
                 }
             }
             editor.setValue(sessionStorage.getItem('fileContents'));
-            sessionStorage.removeItem('fileContents');
             fileInput.value = '';
             overlay.click();
         });
