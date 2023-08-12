@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <style type="text/css" media="screen">
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto:wght@300;400;700;900&display=swap');
 
@@ -307,6 +308,11 @@
             display: none;
         }
 
+        #full-screen__img {
+            height: 100%;
+            width: 100%;
+        }
+
         @media screen and (max-width: 1250px) {
 
             #editor,
@@ -340,7 +346,9 @@
         }
     </script>
     <div class="page">
-        <img id="full-screen" src="" />
+        <div id="full-screen">
+            <img id="full-screen__img" src="" />
+        </div>
         <div id="overlay"></div>
         <div class="modal" id="help">
             <div class="flex-row">
@@ -390,7 +398,8 @@
         const editor = ace.edit("editor");
         editor.renderer.setPadding(14);
         const mermaidContainer = document.getElementById("cls-diagram");
-        const fullMermaid = document.getElementById("full-screen");
+        const fullScreenContainer = document.getElementById("full-screen");
+        const fullMermaid = document.getElementById("full-screen__img");
         const downloadLink = document.getElementById("download-link");
         const overlay = document.getElementById("overlay");
         const modals = Array.from(document.getElementsByClassName('modal'));
@@ -410,6 +419,11 @@
             }
         });
 
+        const panzoom = Panzoom(fullMermaid, {maxScale: 5});
+        panzoom.pan(10, 10);
+        panzoom.zoom(1, {animate: true});
+        //button.addEventListener('click', panzoom.zoomIn);
+        fullMermaid.addEventListener('wheel', panzoom.zoomWithWheel);
 
         ws.addEventListener("message", async (event) => {
             if (event.data) {
@@ -432,11 +446,11 @@
         });
 
         mermaidContainer.addEventListener('click', () => {
-            fullMermaid.style.display = "block";
+            fullScreenContainer.style.display = "block";
         });
 
         fullMermaid.addEventListener('click', () => {
-            fullMermaid.style.display = "none";
+            fullScreenContainer.style.display = "none";
         });
 
         const fileInput = document.querySelector('input[type=file]');
