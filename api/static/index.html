@@ -1,475 +1,560 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Nereus UI</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js" type="text/javascript"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"
+      type="text/javascript"
+    ></script>
     <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <style type="text/css" media="screen">
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto:wght@300;400;700;900&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Roboto+Serif:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto:wght@300;400;700;900&display=swap");
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+      }
+
+      .flex-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+
+      .page {
+        /*height: calc(100vh - 40px + 4.10rem);*/
+        height: 100vh;
+        background-color: rgba(108, 124, 169, 0.8);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+      }
+
+      #overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        background-color: rgba(51, 51, 51, 0.4);
+        z-index: 100;
+        display: none;
+      }
+
+      .modal {
+        display: none;
+        background-color: rgba(115, 126, 166, 1);
+        opacity: 1;
+        color: rgba(20, 45, 96, 1);
+        box-shadow: 0px -1px 2px 2px rgba(51, 51, 51, 0.1),
+          0px 1px 2px 2px rgba(51, 51, 51, 0.1),
+          1px 0 2px 2px rgba(51, 51, 51, 0.1),
+          -1px 0 2px 2px rgba(51, 51, 51, 0.1);
+        position: absolute;
+        height: 350px;
+        width: 600px;
+        z-index: 100;
+        margin: 0 auto;
+        padding: 2.5rem;
+        top: calc(25%);
+        border-radius: 1rem;
+      }
+
+      input[type="file"]::file-selector-button {
+        color: #142d60;
+        background-color: #00c6c1;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        font-family: "Roboto", sans-serif;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+      }
+
+      input[type="file"]::file-selector-button:hover {
+        cursor: pointer;
+      }
+
+      .close-btn {
+        background-color: rgba(20, 45, 96, 1);
+        -webkit-mask-image: url("static/close-btn.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        mask-image: url("static/close-btn.svg");
+        webkit-mask-repeat: no-repeat;
+        webkit-mask-size: cover;
+        width: 20px;
+        height: 20px;
+      }
+
+      #ctrl-panel {
+        position: absolute;
+        left: 0;
+        z-index: 100;
+        height: 60%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        padding-bottom: 100px;
+        justify-content: space-between;
+      }
+
+      .info-btn {
+        width: 30px;
+        height: 30px;
+        background-color: rgba(20, 45, 96, 1);
+        -webkit-mask-image: url("static/info-btn.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        mask-image: url("static/info-btn.svg");
+        webkit-mask-repeat: no-repeat;
+        webkit-mask-size: cover;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+
+      .download-btn {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(20, 45, 96, 1);
+        -webkit-mask-image: url("static/download-btn.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        mask-image: url("static/download-btn.svg");
+        webkit-mask-repeat: no-repeat;
+        webkit-mask-size: cover;
+      }
+
+      .upload-btn {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(20, 45, 96, 1);
+        -webkit-mask-image: url("static/upload-btn.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        mask-image: url("static/upload-btn.svg");
+        webkit-mask-repeat: no-repeat;
+        webkit-mask-size: cover;
+      }
+
+      .copy-btn {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(20, 45, 96, 1);
+        -webkit-mask-image: url("static/copy-btn.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        mask-image: url("static/copy-btn.svg");
+        webkit-mask-repeat: no-repeat;
+        webkit-mask-size: cover;
+      }
+
+      .button:hover,
+      .close-btn:hover {
+        cursor: pointer;
+        background-color: rgba(20, 45, 96, 0.5);
+      }
+
+      .button:hover {
+        transform: scale(1.2);
+      }
+
+      .modal__title {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-size: 1.75rem;
+      }
+
+      .modal__text {
+        font-family: "Roboto", sans-serif;
+        font-weight: 300;
+        font-size: 1.1rem;
+        line-height: 1.5rem;
+      }
+
+      nav {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        padding: 0.5rem 1rem;
+        text-align: center;
+        z-index: 200;
+        /* box-shadow: 0px 5px 20px 0px rgba(108, 124, 169, .85); */
+        border-bottom: 1px solid rgba(108, 124, 169, 0.85);
+      }
+
+      nav,
+      .contents {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .main {
+        display: flex;
+        flex-direction: row;
+        height: calc(100% - 40px);
+        align-items: start;
+        justify-content: end;
+        position: relative;
+        width: 100%;
+      }
+
+      .logo {
+        background-image: url(static/logo.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        width: 100px;
+        height: calc(40px - 1rem);
+      }
+
+      .help {
+        text-align: center;
+        font-family: "Roboto", sans-serif;
+        color: rgba(20, 45, 96, 1);
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.02rem;
+        padding: 1rem 0 2rem 0;
+      }
+
+      .drop-zone {
+        border: 2px dashed rgba(20, 45, 96, 0.5);
+        background-color: 2px dashed rgba(20, 45, 96, 0.5);
+        background-color: rgba(51, 51, 51, 0.05);
+        width: 90%;
+        height: 75%;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: left;
+      }
+
+      .drop-zone p {
+        margin-bottom: 1.5rem;
+      }
+
+      .modal__btn {
+        padding: 0.5rem 2rem;
+        font-family: "Roboto", sans-serif;
+        font-weight: 900;
+        border-radius: 5px;
+        border: none;
+      }
+
+      .contents {
+        justify-content: start;
+        gap: 5rem;
+        height: 100%;
+        width: calc(100vw - 15px * 2 - 40px);
+        /*max-width: 1600px;*/
+        overflow-y: auto;
+        padding-left: 0.1rem;
+      }
+
+      .container {
+        height: 100%;
+        position: relative;
+        width: 45%;
+        display: flex;
+      }
+
+      #editor,
+      #cls-diagram {
+        font-size: 1.25rem;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #editor {
+        height: 100%;
+        border-right: 1px solid rgba(108, 124, 169, 0.85);
+      }
+
+      #fallback {
+        height: 90%;
+        align-self: center;
+        padding: 1.25rem;
+        width: 100%;
+        text-align: center;
+        border: 2px dashed black;
+      }
+
+      #fallback > h1 {
+        margin-bottom: 0.25rem;
+      }
+
+      #fallback > p {
+        margin-bottom: 1.2rem;
+      }
+
+      .ace_content,
+      .ace_gutter {
+        padding-top: 0.5rem;
+      }
+
+      #cls-diagram {
+        display: none;
+        cursor: zoom-in;
+      }
+
+      #cls-diagram {
+        display: none;
+        cursor: zoom-in;
+      }
+
+      #full-screen {
+        z-index: 1000;
+        height: 100vh;
+        width: 100vw;
+        position: absolute;
+        top: 0;
+        background-color: rgba(115, 126, 166, 1);
+        left: 0;
+        display: none;
+        padding: 1.5rem;
+      }
+
+      #full-screen > .flex-row {
+        z-index: 1000;
+      }
+
+      .help-txt {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-size: 1.15rem;
+      }
+
+      #full-screen__img {
+        height: 100%;
+        width: 100%;
+      }
+
+      @media screen and (max-width: 1250px) {
+        #editor,
+        #cls-diagram {
+          font-size: 1rem;
         }
 
-        html,
-        body {
-            width: 100%;
-        }
-
-        .flex-row {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .page {
-            /*height: calc(100vh - 40px + 4.10rem);*/
-            height: 100vh;
-            background-color: rgba(108, 124, 169, .80);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: start;
-            align-items: center;
-        }
-
-        #overlay {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            background-color: rgba(51, 51, 51, 0.40);
-            z-index: 100;
-            display: none;
-        }
-
-        .modal {
-            display: none;
-            background-color: rgba(115, 126, 166, 1);
-            opacity: 1;
-            color: rgba(20, 45, 96, 1);
-            box-shadow:
-                0px -1px 2px 2px rgba(51, 51, 51, 0.10),
-                0px 1px 2px 2px rgba(51, 51, 51, 0.10),
-                1px 0 2px 2px rgba(51, 51, 51, 0.10),
-                -1px 0 2px 2px rgba(51, 51, 51, 0.10);
-            position: absolute;
-            height: 350px;
-            width: 600px;
-            z-index: 100;
-            margin: 0 auto;
-            padding: 2.5rem;
-            top: calc(25%);
-            border-radius: 1rem;
-        }
-
-        input[type=file]::file-selector-button {
-            color: #142D60;
-            background-color: #00C6C1;
-            border: none;
-            padding: 0.5rem 1rem;
-            font-family: "Roboto", sans-serif;
-            border-radius: .50rem;
-        }
-
-        input[type=file]::file-selector-button:hover {
-            cursor: pointer;
-        }
-
-        .close-btn {
-            background-color: rgba(20, 45, 96, 1);
-            -webkit-mask-image: url('static/close-btn.svg');
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-size: cover;
-            mask-image: url('static/close-btn.svg');
-            webkit-mask-repeat: no-repeat;
-            webkit-mask-size: cover;
-            width: 20px;
-            height: 20px;
-        }
-
-        #ctrl-panel {
-            position: absolute;
-            left: 0;
-            z-index: 100;
-            height: 60%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 25px;
-            padding-bottom: 100px;
-            justify-content: space-between;
-        }
-
-        .info-btn {
-            width: 30px;
-            height: 30px;
-            background-color: rgba(20, 45, 96, 1);
-            -webkit-mask-image: url('static/info-btn.svg');
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-size: cover;
-            mask-image: url('static/info-btn.svg');
-            webkit-mask-repeat: no-repeat;
-            webkit-mask-size: cover;
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-
-        .download-btn {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(20, 45, 96, 1);
-            -webkit-mask-image: url('static/download-btn.svg');
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-size: cover;
-            mask-image: url('static/download-btn.svg');
-            webkit-mask-repeat: no-repeat;
-            webkit-mask-size: cover;
-        }
-
-        .upload-btn {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(20, 45, 96, 1);
-            -webkit-mask-image: url('static/upload-btn.svg');
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-size: cover;
-            mask-image: url('static/upload-btn.svg');
-            webkit-mask-repeat: no-repeat;
-            webkit-mask-size: cover;
-        }
-
-        .copy-btn {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(20, 45, 96, 1);
-            -webkit-mask-image: url('static/copy-btn.svg');
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-size: cover;
-            mask-image: url('static/copy-btn.svg');
-            webkit-mask-repeat: no-repeat;
-            webkit-mask-size: cover;
-        }
-
-        .button:hover,
-        .close-btn:hover {
-            cursor: pointer;
-            background-color: rgba(20, 45, 96, .50);
-        }
-
-        .button:hover {
-            transform: scale(1.2);
-        }
-
-        .modal__title {
-            font-family: "Roboto Serif", serif;
-            font-weight: 400;
-            font-size: 1.75rem;
-        }
-
-        .modal__text {
-            font-family: "Roboto", sans-serif;
-            font-weight: 300;
-            font-size: 1.10rem;
-            line-height: 1.5rem;
-        }
-
-        nav {
-            position: relative;
-            width: 100%;
-            height: 40px;
-            padding: 0.5rem 1rem;
-            text-align: center;
-            z-index: 200;
-            /* box-shadow: 0px 5px 20px 0px rgba(108, 124, 169, .85); */
-            border-bottom: 1px solid rgba(108, 124, 169, .85);
-        }
-
-        nav,
         .contents {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
-
-        .main {
-            display: flex;
-            flex-direction: row;
-            height: calc(100% - 40px);
-            align-items: start;
-            justify-content: end;
-            position: relative;
-            width: 100%;
-        }
-
-        .logo {
-            background-image: url(static/logo.svg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            width: 100px;
-            height: calc(40px - 1rem);
-        }
-
-        .help {
-            text-align: center;
-            font-family: 'Roboto', sans-serif;
-            color: rgba(20, 45, 96, 1);
-            font-weight: 700;
-            font-size: 1.10rem;
-            letter-spacing: 0.02rem;
-            padding: 1rem 0 2rem 0;
-        }
-
-        .drop-zone {
-            border: 2px dashed rgba(20, 45, 96, 0.5);
-            background-color: 2px dashed rgba(20, 45, 96, 0.5);
-            background-color: rgba(51, 51, 51, 0.05);
-            width: 90%;
-            height: 75%;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: left;
-        }
-
-        .drop-zone p {
-            margin-bottom: 1.50rem;
-        }
-
-        .modal__btn {
-            padding: 0.5rem 2rem;
-            font-family: "Roboto", sans-serif;
-            font-weight: 900;
-            border-radius: 5px;
-            border: none;
-        }
-
-        .contents {
-            justify-content: start;
-            gap: 5rem;
-            height: 100%;
-            width: calc(100vw - 25px * 2 - 40px);
-            /*max-width: 1600px;*/
-            overflow-y: auto;
-            padding-left: 0.10rem;
+          justify-content: space-between;
         }
 
         .container {
-            height: 100%;
-            position: relative;
-            width: 45%;
+          width: 50%;
         }
-
-        #editor,
-        #cls-diagram {
-            font-size: 1.25rem;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #editor {
-            height: 100%;
-            border-right: 1px solid rgba(108, 124, 169, .85);
-        }
-
-        .ace_content,
-        .ace_gutter {
-            padding-top: 0.5rem;
-        }
-
-        #cls-diagram {
-            display: none;
-        }
-
-        #cls-diagram {
-            cursor: zoom-in;
-        }
-
-        #full-screen {
-            z-index: 1000;
-            height: 100vh;
-            width: 100vw;
-            position: absolute;
-            top: 0;
-            background-color: rgba(115, 126, 166, .85);
-            backdrop-filter: blur(8px);
-            left: 0;
-            display: none;
-        }
-
-        #full-screen__img {
-            height: 100%;
-            width: 100%;
-        }
-
-        @media screen and (max-width: 1250px) {
-
-            #editor,
-            #cls-diagram {
-                font-size: 1.00rem;
-            }
-
-            .contents {
-                justify-content: space-between;
-            }
-
-            .container {
-                width: 50%;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <script>
-        function closeModal(e) {
-            const parentId = e.target.dataset.modal;
-            document.getElementById(parentId).style.display = "none";
-            document.getElementById("overlay").style.display = "none";
-        }
+      function closeModal(e) {
+        const parentId = e.target.dataset.modal;
+        document.getElementById(parentId).style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+      }
 
-        function openModal(e) {
-            const parentId = e.target.dataset.modal;
-            document.getElementById(parentId).style.display = "block";
-            document.getElementById("overlay").style.display = "block";
-        }
+      function openModal(e) {
+        const parentId = e.target.dataset.modal;
+        document.getElementById(parentId).style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+      }
     </script>
     <div class="page">
-        <div id="full-screen">
-            <img id="full-screen__img" src="" />
+      <div id="full-screen">
+        <div class="flex-row">
+          <p class="help-txt">Drag to pan. Scroll to zoom. Escape to close.</p>
+          <div
+            id="fs-cls-btn"
+            class="close-btn"
+            data-modal="full-screen"
+            onclick="closeModal(event);"
+          ></div>
         </div>
-        <div id="overlay"></div>
-        <div class="modal" id="help">
-            <div class="flex-row">
-                <p class="modal__title">Help</p>
-                <div class="close-btn" data-modal="help" onclick="closeModal(event);"></div>
-            </div>
-            <p class="modal__text">enter valid pydantic models and watch their UML appear!</p>
+        <img id="full-screen__img" src="" />
+      </div>
+      <div id="overlay"></div>
+      <div class="modal" id="help">
+        <div class="flex-row">
+          <p class="modal__title">Help</p>
+          <div
+            class="close-btn"
+            data-modal="help"
+            onclick="closeModal(event);"
+          ></div>
         </div>
-        <div class="modal" id="upload">
-            <div class="flex-row">
-                <p class="modal__title">Code Upload</p>
-                <div class="close-btn" data-modal="upload" onclick="closeModal(event);"></div>
-            </div>
-            <div class="drop-zone">
-                <p class="modal__text">Upload or drag a folder here to upload its contents to the editor.</p>
-                <input type="file" webkitdirectory mozdirectory>
-            </div>
+        <p class="modal__text">
+          enter valid pydantic models and watch their UML appear!
+        </p>
+      </div>
+      <div class="modal" id="upload">
+        <div class="flex-row">
+          <p class="modal__title">Code Upload</p>
+          <div
+            class="close-btn"
+            data-modal="upload"
+            onclick="closeModal(event);"
+          ></div>
         </div>
-        <nav>
-            <div class="logo"></div>
-        </nav>
-        <div class="main">
-            <div id="ctrl-panel">
-                <div class="button info-btn" title="Help" data-modal="help" onclick="openModal(event);"></div>
-                <div class="button upload-btn" title="Upload files" data-modal="upload" onclick="openModal(event);">
-                </div>
-                <a href="" id="download-link">
-                    <div id="download-btn" title="Download image" class="download-btn button"></div>
-                </a>
-                <div class="button copy-btn" title="Copy mermaid code" id="copy-btn"></div>
-            </div>
-            <div class="contents">
-                <div class="container">
-                    <div id="editor"></div>
-                </div>
-                <div class="container"><img id="cls-diagram" src=""></img></div>
-            </div>
+        <div class="drop-zone">
+          <p class="modal__text">
+            Upload or drag a folder here to upload its contents to the editor.
+          </p>
+          <input type="file" webkitdirectory mozdirectory />
         </div>
+      </div>
+      <nav>
+        <div class="logo"></div>
+      </nav>
+      <div class="main">
+        <div id="ctrl-panel">
+          <div
+            class="button info-btn"
+            title="Help"
+            data-modal="help"
+            onclick="openModal(event);"
+          ></div>
+          <div
+            class="button upload-btn"
+            title="Upload files"
+            data-modal="upload"
+            onclick="openModal(event);"
+          ></div>
+          <a href="" id="download-link">
+            <div
+              id="download-btn"
+              title="Download image"
+              class="download-btn button"
+            ></div>
+          </a>
+          <div
+            class="button copy-btn"
+            title="Copy mermaid code"
+            id="copy-btn"
+          ></div>
+        </div>
+        <div class="contents">
+          <div class="container">
+            <div id="editor"></div>
+          </div>
+          <div class="container">
+            <div id="fallback">
+              <h1>Give us some Python!</h1>
+              <p>Upload a folder or write a class to get started.</p>
+              <input type="file" webkitdirectory mozdirectory />
+            </div>
+            <img id="cls-diagram" src="" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
 
-        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
-        mermaid.initialize({startOnLoad: false, theme: "dark"});
+      const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
+      const editor = ace.edit("editor");
+      editor.renderer.setPadding(14);
+      const mermaidContainer = document.getElementById("cls-diagram");
+      const fullScreenContainer = document.getElementById("full-screen");
+      const fullMermaid = document.getElementById("full-screen__img");
+      const downloadLink = document.getElementById("download-link");
+      const overlay = document.getElementById("overlay");
+      const modals = Array.from(document.getElementsByClassName("modal"));
 
-        const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
-        const editor = ace.edit("editor");
-        editor.renderer.setPadding(14);
-        const mermaidContainer = document.getElementById("cls-diagram");
-        const fullScreenContainer = document.getElementById("full-screen");
-        const fullMermaid = document.getElementById("full-screen__img");
-        const downloadLink = document.getElementById("download-link");
-        const overlay = document.getElementById("overlay");
-        const modals = Array.from(document.getElementsByClassName('modal'));
+      const copyButton = document.getElementById("copy-btn");
+      copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(sessionStorage.getItem("mermaid"));
+      });
+      editor.setTheme("ace/theme/tomorrow_night_blue");
+      editor.session.setMode("ace/mode/python");
+      editor.setKeyboardHandler("ace/keyboard/vim");
+      editor.on("change", () => {
+        sessionStorage.removeItem("fileContents");
+        if (ws.bufferedAmount === 0) {
+          sessionStorage.removeItem("mermaid");
+          ws.send(editor.getValue());
+        }
+      });
 
-        const copyButton = document.getElementById("copy-btn");
-        copyButton.addEventListener("click", () => {
-            navigator.clipboard.writeText(sessionStorage.getItem('mermaid'));
-        });
-        editor.setTheme("ace/theme/tomorrow_night_blue");
-        editor.session.setMode("ace/mode/python");
-        editor.setKeyboardHandler("ace/keyboard/vim");
-        editor.on("change", () => {
-            sessionStorage.removeItem('fileContents');
-            if (ws.bufferedAmount === 0) {
-                sessionStorage.removeItem("mermaid");
-                ws.send(editor.getValue());
+      const panzoom = Panzoom(fullMermaid, { maxScale: 5 });
+      //panzoom.pan(10, 10);
+      //panzoom.zoom(1, {animate: true});
+      //button.addEventListener('click', panzoom.zoomIn);
+      fullMermaid.addEventListener("wheel", panzoom.zoomWithWheel);
+
+      ws.addEventListener("message", async (event) => {
+        if (event.data) {
+          console.log(event.data);
+          sessionStorage.setItem("mermaid", event.data);
+          const { svg } = await mermaid.render("classDiagram", event.data);
+          const blob = new Blob([svg], { type: "image/svg+xml" });
+          const src = URL.createObjectURL(blob);
+          mermaidContainer.src = src;
+          fullMermaid.src = src;
+          const fallbaack = document.getElementById("fallback");
+          fallback.style.display = "none";
+          mermaidContainer.style.display = "block";
+          downloadLink.href = src;
+          downloadLink.download = new Date().toString() + ".svg";
+        }
+      });
+
+      overlay.addEventListener("click", () => {
+        modals.forEach((m) => (m.style.display = "none"));
+        overlay.style.display = "none";
+      });
+
+      mermaidContainer.addEventListener("click", () => {
+        fullScreenContainer.style.display = "block";
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          document.getElementById("fs-cls-btn").click();
+        }
+      });
+
+      const fileInputs = document.querySelectorAll("input[type=file]");
+      console.log(fileInputs);
+      fileInputs.forEach((fi) => {
+        fi.addEventListener("change", async (event) => {
+          for (let file of event.target.files) {
+            if (file.name.endsWith(".py")) {
+              const reader = new FileReader();
+              reader.addEventListener("load", (e) => {
+                const curr = sessionStorage.getItem("fileContents") || "";
+                sessionStorage.setItem(
+                  "fileContents",
+                  curr + (curr ? "\n" : "") + reader.result
+                );
+              });
+              reader.readAsText(file);
             }
+          }
+          console.log("setting editor");
+          editor.setValue(sessionStorage.getItem("fileContents"));
+          fi.value = "";
+          overlay.click();
         });
-
-        const panzoom = Panzoom(fullMermaid, {maxScale: 5});
-        panzoom.pan(10, 10);
-        panzoom.zoom(1, {animate: true});
-        //button.addEventListener('click', panzoom.zoomIn);
-        fullMermaid.addEventListener('wheel', panzoom.zoomWithWheel);
-
-        ws.addEventListener("message", async (event) => {
-            if (event.data) {
-                console.log(event.data);
-                sessionStorage.setItem('mermaid', event.data);
-                const {svg} = await mermaid.render("classDiagram", event.data);
-                const blob = new Blob([svg], {type: "image/svg+xml"});
-                const src = URL.createObjectURL(blob);
-                mermaidContainer.src = src;
-                fullMermaid.src = src;
-                mermaidContainer.style.display = 'block';
-                downloadLink.href = src;
-                downloadLink.download = new Date().toString() + '.svg';
-            }
-        });
-
-        overlay.addEventListener('click', () => {
-            modals.forEach(m => m.style.display = 'none');
-            overlay.style.display = "none";
-        });
-
-        mermaidContainer.addEventListener('click', () => {
-            fullScreenContainer.style.display = "block";
-        });
-
-        fullMermaid.addEventListener('click', () => {
-            fullScreenContainer.style.display = "none";
-        });
-
-        const fileInput = document.querySelector('input[type=file]');
-        fileInput.addEventListener('change', async (event) => {
-            for (let file of event.target.files) {
-                if (file.name.endsWith('.py')) {
-                    const reader = new FileReader();
-                    reader.addEventListener('load', (e) => {
-                        const curr = sessionStorage.getItem('fileContents') || '';
-                        sessionStorage.setItem('fileContents', curr + ((curr) ? '\n' : '') + reader.result);
-                    });
-                    reader.readAsText(file);
-                }
-            }
-            editor.setValue(sessionStorage.getItem('fileContents'));
-            fileInput.value = '';
-            overlay.click();
-        });
+      });
     </script>
-</body>
-
+  </body>
 </html>
