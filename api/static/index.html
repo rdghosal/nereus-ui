@@ -33,6 +33,7 @@
 
       .page {
         /*height: calc(100vh - 40px + 4.10rem);*/
+        font-family: "Roboto", sans-serif;
         height: 100vh;
         background-color: rgba(115, 136, 181, 0.75);
         position: relative;
@@ -324,10 +325,12 @@
 
       #fallback > h1 {
         margin-bottom: 0.25rem;
+        font-size: 2.5rem;
       }
 
       #fallback > p {
         margin-bottom: 1.2rem;
+        font-size: 1.2rem;
       }
 
       .ace_content,
@@ -397,7 +400,13 @@
       }
 
       #full-screen > .flex-row {
+        background-color: rgba(115, 126, 166, 1);
         z-index: 1000;
+        position: absolute;
+        width: 100vw;
+        top: 0;
+        left: 0;
+        padding: 1rem 1.5rem;
       }
 
       .help-txt {
@@ -409,6 +418,7 @@
       #full-screen__img {
         height: 100%;
         width: 100%;
+        z-index: -500;
       }
 
       @media screen and (max-width: 1250px) {
@@ -554,7 +564,7 @@
         }
       });
 
-      const panzoom = Panzoom(fullMermaid, { maxScale: 5 });
+      const panzoom = Panzoom(fullMermaid, { maxScale: 2 });
       //panzoom.pan(10, 10);
       panzoom.zoom(0.5, { animate: true });
       //button.addEventListener('click', panzoom.zoomIn);
