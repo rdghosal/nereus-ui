@@ -428,11 +428,20 @@
         }
 
         .contents {
+          gap: 0rem;
           justify-content: space-between;
         }
 
         .container {
           width: 50%;
+        }
+
+        .contents > *:nth-child(2) {
+          padding: 0rem 0.5rem;
+        }
+
+        #ctrl-btns {
+          padding-right: 0.5rem;
         }
       }
     </style>
@@ -537,55 +546,30 @@
 
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      import init, { make_class_diagram } from "/static/nereus_wasm.js";
 
-      const ws = new WebSocket("ws://127.0.0.1:8080/ws/");
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
       const editor = ace.edit("editor");
       editor.renderer.setPadding(14);
+      editor.setTheme("ace/theme/tomorrow_night_blue");
+      editor.session.setMode("ace/mode/python");
+      editor.setKeyboardHandler("ace/keyboard/vim");
+
       const mermaidContainer = document.getElementById("cls-diagram");
       const fullScreenContainer = document.getElementById("full-screen");
       const fullMermaid = document.getElementById("full-screen__img");
       const downloadLink = document.getElementById("download-link");
       const overlay = document.getElementById("overlay");
       const modals = Array.from(document.getElementsByClassName("modal"));
-
       const copyButton = document.getElementById("copy-btn");
-      copyButton.addEventListener("click", () => {
-        navigator.clipboard.writeText(sessionStorage.getItem("mermaid"));
-      });
-      editor.setTheme("ace/theme/tomorrow_night_blue");
-      editor.session.setMode("ace/mode/python");
-      editor.setKeyboardHandler("ace/keyboard/vim");
-      editor.on("change", () => {
-        sessionStorage.removeItem("fileContents");
-        if (ws.bufferedAmount === 0) {
-          sessionStorage.removeItem("mermaid");
-          ws.send(editor.getValue());
-        }
-      });
-
       const panzoom = Panzoom(fullMermaid, { maxScale: 2 });
-      //panzoom.pan(10, 10);
+      const fileInputs = document.querySelectorAll("input[type=file]");
+
       panzoom.zoom(0.5, { animate: true });
-      //button.addEventListener('click', panzoom.zoomIn);
       fullMermaid.addEventListener("wheel", panzoom.zoomWithWheel);
 
-      ws.addEventListener("message", async (event) => {
-        if (event.data) {
-          console.log(event.data);
-          sessionStorage.setItem("mermaid", event.data);
-          const { svg } = await mermaid.render("classDiagram", event.data);
-          const blob = new Blob([svg], { type: "image/svg+xml" });
-          const src = URL.createObjectURL(blob);
-          mermaidContainer.src = src;
-          fullMermaid.src = src;
-          const fallbaack = document.getElementById("fallback");
-          fallback.style.display = "none";
-          mermaidContainer.style.display = "block";
-          document.getElementById("ctrl-btns").style.display = "flex";
-          downloadLink.href = src;
-          downloadLink.download = new Date().toString() + ".svg";
-        }
+      copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(sessionStorage.getItem("mermaid"));
       });
 
       overlay.addEventListener("click", () => {
@@ -603,29 +587,60 @@
         }
       });
 
-      const fileInputs = document.querySelectorAll("input[type=file]");
-      console.log(fileInputs);
       fileInputs.forEach((fi) => {
-        fi.addEventListener("change", async (event) => {
-          for (let file of event.target.files) {
-            if (file.name.endsWith(".py")) {
-              const reader = new FileReader();
-              reader.addEventListener("load", (e) => {
-                const curr = sessionStorage.getItem("fileContents") || "";
-                sessionStorage.setItem(
-                  "fileContents",
-                  curr + (curr ? "\n" : "") + reader.result
-                );
-              });
-              reader.readAsText(file);
-            }
+        fi.addEventListener("change", (event) => {
+          const pyFiles = Array.from(event.target.files).filter((f) =>
+            f.name.endsWith(".py")
+          );
+
+          let loadCount = 0;
+          for (const [i, f] of pyFiles.entries()) {
+            const reader = new FileReader();
+            reader.addEventListener("load", (e) => {
+              const curr = sessionStorage.getItem("fileContents") || "";
+              sessionStorage.setItem(
+                "fileContents",
+                curr + (curr ? "\n" : "") + reader.result
+              );
+              loadCount++;
+              if (loadCount === pyFiles.length) {
+                editor.setValue(sessionStorage.getItem("fileContents"));
+                sessionStorage.removeItem("fileContents");
+              }
+            });
+            reader.readAsText(f);
           }
-          console.log("setting editor");
-          editor.setValue(sessionStorage.getItem("fileContents"));
           fi.value = "";
           overlay.click();
         });
       });
+
+      async function initWasm() {
+        await init();
+        editor.on("change", async () => {
+          let output = "";
+          try {
+            output = make_class_diagram(editor.getValue());
+          } catch (e) {
+            console.debug(e);
+          }
+          if (output) {
+            sessionStorage.setItem("mermaid", output);
+            const { svg } = await mermaid.render("classDiagram", output);
+            const blob = new Blob([svg], { type: "image/svg+xml" });
+            const src = URL.createObjectURL(blob);
+            mermaidContainer.src = src;
+            fullMermaid.src = src;
+            const fallback = document.getElementById("fallback");
+            fallback.style.display = "none";
+            mermaidContainer.style.display = "block";
+            document.getElementById("ctrl-btns").style.display = "flex";
+            downloadLink.href = src;
+            downloadLink.download = new Date().toString() + ".svg";
+          }
+        });
+      }
+      initWasm();
     </script>
   </body>
 </html>
