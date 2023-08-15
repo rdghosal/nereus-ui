@@ -562,7 +562,7 @@
       const overlay = document.getElementById("overlay");
       const modals = Array.from(document.getElementsByClassName("modal"));
       const copyButton = document.getElementById("copy-btn");
-      const panzoom = Panzoom(fullMermaid, { maxScale: 2 });
+      const panzoom = Panzoom(fullMermaid, { maxScale: 5 });
       const fileInputs = document.querySelectorAll("input[type=file]");
 
       panzoom.zoom(0.5, { animate: true });
