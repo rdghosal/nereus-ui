@@ -464,7 +464,9 @@
     <div class="page">
       <div id="full-screen">
         <div class="flex-row">
-          <p class="help-txt">Drag to pan. Scroll to zoom. Escape to close.</p>
+          <p class="help-txt">
+            Drag to pan. Scroll to zoom. <kbd>Esc</kbd> to close.
+          </p>
           <div
             id="fs-cls-btn"
             class="close-btn"
@@ -617,7 +619,7 @@
 
       async function initWasm() {
         await init();
-        editor.on("change", async () => {
+        editor.on("input", async () => {
           let output = "";
           try {
             output = make_class_diagram(editor.getValue());
